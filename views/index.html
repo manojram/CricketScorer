@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Live Score</title>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        function tuneOut(){
+            var div = document.getElementById('score-tab');
+
+            div.style.display = 'none';
+        }
+       function displayDiv(){
+           var div = document.getElementById('score-tab');
+
+           div.style.display = 'block';
+
+           var socket = io();
+           socket.on('welcome', function(data) {
+              // addMessage(data.message);
+
+               // Respond with a message including this clients' id sent from the server
+               socket.emit('i am client', {data: 'foo!', id: data.id});
+           });
+           socket.on('time', function(data) {
+               addMessage(data);
+
+               socket.emit('update', {data : document.getElementById('time').innerText});
+           });
+
+           socket.on('error', console.error.bind(console));
+           socket.on('message', console.log.bind(console));
+
+           function addMessage(message) {
+
+               var score = parseInt((document.getElementById('score').innerText),10);
+               console.log(score);
+
+               document.getElementById('score').innerHTML = score+Number(message.score);
+               document.getElementById("time").innerHTML = message.time;
+
+               console.log(message);
+           }
+       }
+    </script>
+</head>
+<body>
+
+<div class="container">
+    <div class = "panel panel-primary">
+        <div class = "panel-heading">
+            <h3 class = "panel-title"><center>Live Score</center></h3>
+        </div>
+
+        <div class = "panel-body">
+            <p> Live Sporting Event : Cricket Match</p>
+            <div id="score-tab" style="display: none">
+                Current Score: <div id="score">0</div><br>
+                Commentator: <div id="time"></div>
+            </div>
+
+           <center> <button type="button" class="btn btn-success" onclick = "displayDiv()">Tune In</button>
+
+            <button type="button" class="btn btn-danger" onclick="tuneOut()">Tune Out</button></center>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
